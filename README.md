@@ -2,6 +2,8 @@
 
 أداة تشرح config الراوترات والسويتشات بالعربي وتكشف المشاكل الأمنية، باستخدام Gemini API.
 
+![لقطة شاشة](public/Screenshot.png)
+
 ## التقنيات
 
 - Next.js + TypeScript
