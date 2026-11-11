@@ -1,15 +1,24 @@
 import { GoogleGenAI, type Content, type Part } from "@google/genai";
 import { NextResponse } from "next/server";
 import { toolDeclarations, runTool } from "../../../lib/agent";
+import { getIp, rateLimit, validateText } from "../../../lib/guard";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
   try {
+    if (!rateLimit(getIp(req))) {
+      return NextResponse.json(
+        { error: "طلبات كثيرة، انتظري دقيقة وحاولي مرة ثانية" },
+        { status: 429 },
+      );
+    }
+
     const { message } = await req.json();
 
-    if (!message || !message.trim()) {
-      return NextResponse.json({ error: "اكتبي طلب أولاً" }, { status: 400 });
+    const problem = validateText(message, 4000);
+    if (problem) {
+      return NextResponse.json({ error: problem }, { status: 400 });
     }
 
     const contents: Content[] = [{ role: "user", parts: [{ text: message }] }];

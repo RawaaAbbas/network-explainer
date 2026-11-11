@@ -1,15 +1,24 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { findRelevant } from "../../../lib/rag";
+import { getIp, rateLimit, validateText } from "../../../lib/guard";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
   try {
+    if (!rateLimit(getIp(req))) {
+      return NextResponse.json(
+        { error: "طلبات كثيرة، انتظري دقيقة وحاولي مرة ثانية" },
+        { status: 429 },
+      );
+    }
+
     const { question } = await req.json();
 
-    if (!question || !question.trim()) {
-      return NextResponse.json({ error: "اكتبي سؤال أولاً" }, { status: 400 });
+    const problem = validateText(question, 1000);
+    if (problem) {
+      return NextResponse.json({ error: problem }, { status: 400 });
     }
 
     const relevant = await findRelevant(question);

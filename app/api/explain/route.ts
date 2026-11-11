@@ -1,17 +1,23 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
+import { getIp, rateLimit, validateText } from "../../../lib/guard";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
   try {
+    if (!rateLimit(getIp(req))) {
+      return NextResponse.json(
+        { error: "طلبات كثيرة، انتظري دقيقة وحاولي مرة ثانية" },
+        { status: 429 },
+      );
+    }
+
     const { config } = await req.json();
 
-    if (!config || !config.trim()) {
-      return NextResponse.json(
-        { error: "الصقي config أولاً" },
-        { status: 400 },
-      );
+    const problem = validateText(config, 8000);
+    if (problem) {
+      return NextResponse.json({ error: problem }, { status: 400 });
     }
 
     let response;
