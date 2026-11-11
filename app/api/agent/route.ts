@@ -2,10 +2,12 @@ import { GoogleGenAI, type Content, type Part } from "@google/genai";
 import { NextResponse } from "next/server";
 import { toolDeclarations, runTool } from "../../../lib/agent";
 import { getIp, rateLimit, validateText } from "../../../lib/guard";
+import { addUsage, logRequest, type Usage } from "../../../lib/metrics";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
+  const startedAt = Date.now()
   try {
     if (!rateLimit(getIp(req))) {
       return NextResponse.json(
@@ -24,6 +26,8 @@ export async function POST(req: Request) {
     const contents: Content[] = [{ role: "user", parts: [{ text: message }] }];
     const steps: { tool: string; args: unknown; result: unknown }[] = [];
 
+    let totalUsage: Usage = {};
+
     for (let round = 0; round < 5; round++) {
       const response = await ai.models.generateContent({
         model: "gemini-flash-lite-latest",
@@ -36,9 +40,15 @@ export async function POST(req: Request) {
         },
       });
 
+      totalUsage = addUsage(totalUsage, response.usageMetadata);
+
       const calls = response.functionCalls;
 
       if (!calls || calls.length === 0) {
+        logRequest("agent", startedAt, totalUsage, {
+          rounds: round + 1,
+          tools: steps.map((s) => s.tool),
+        });
         return NextResponse.json({ result: response.text, steps });
       }
 
