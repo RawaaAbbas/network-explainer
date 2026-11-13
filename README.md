@@ -55,12 +55,12 @@
 3. نكرر لين يجاوب بنص نهائي، بحد أقصى 5 جولات.
 4. الصفحة تعرض الأدوات اللي استخدمها مع نتائجها.
 
-## المرحلة 4: الجاهزية للإنتاج (Production)
+## Stage 4: Production readiness
 
-- **حماية الـ API:** حد 5 طلبات بالدقيقة لكل IP، مع التحقق من طول النص المُدخل (`lib/guard.ts`).
-  -بالدقيقة لكل IP، مع التتسجيل زمن كل طلب وعدد الـ tokens (`lib/metrics.ts`).
-- الـ API:** حد 5 الكود (`checkConfigSecurity`) يكتشف المشاكل الأمنية بقواعد ثابتة ويكتبها بالعربي، والموديل يشرح أسطر الإعدادات فقط. لذلك قائمة المشاكل تطلع نفسها كل مرة.
-  -etrics):** تنفس الـ config يرجع نفس الجواب حرفياً بدون استدعاء الموديل. الـ cache بالذاكرة، فيتمسح عند إعادة تشغيل السيرفر.
-  -نص المُدخل (اختبارات بأجوبة معروفة لحاسبة الـ subnet وفاحص الأمان. التشغيل:\*\* حد 5 طلبات با
+- **API protection:** max 5 requests per minute per IP, plus input length validation (`lib/guard.ts`).
+  -per IP, plus ilogs request time and token usage (`lib/metrics.ts`).
+- max 5 requests per the code (`checkConfigSecurity`) detects security issues with fixed rules and writes them in Arabic; the model only explains the config lines. The issues list is identical on every run.
+  -`lib/metricsthe same config returns the same answer without calling the model (in-memory, cleared on server restart).
+- validation known-answer tests for the subnet calculator and the security checker. Run withte per IP, plus
 
-# المرحلة 4: ابعد تقصير الـ prompt وتحديد طول الجواب، نزل الطلب من حوالي 1436 token و10 ثواني إلى حوالي 290 token وثانيتين. والطلب المكرر يرجع خلال حوالي 40ms من الـ cache.
+# Stage 4: Proafter shortening the prompt and capping output length, a request dropped from about 1436 tokens and 10 s to about 290 tokens and 2 s. Repeated requests return in about 40 ms from the cache.
