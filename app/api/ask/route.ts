@@ -2,10 +2,12 @@ import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { findRelevant } from "../../../lib/rag";
 import { getIp, rateLimit, validateText } from "../../../lib/guard";
+import { logRequest } from "../../../lib/metrics";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
+  const startedAt = Date.now()
   try {
     if (!rateLimit(getIp(req))) {
       return NextResponse.json(
@@ -33,6 +35,10 @@ export async function POST(req: Request) {
         systemInstruction:
           "Answer the question using ONLY the context provided. Answer in simple Arabic. If the answer is not in the context, say that it is not in the document.",
       },
+    });
+
+    logRequest("ask", startedAt, response.usageMetadata, {
+      chunks: relevant.length,
     });
 
     return NextResponse.json({

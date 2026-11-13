@@ -40,7 +40,7 @@ export function checkConfigSecurity(config: string) {
 
   if (lines.some((l) => l.startsWith("enable password"))) {
     issues.push(
-      "enable password stores the password in clear text. Use enable secret instead.",
+      "الأمر enable password يخزن كلمة السر بنص واضح. استخدمي enable secret بدله.",
     );
   }
 
@@ -55,7 +55,7 @@ export function checkConfigSecurity(config: string) {
   for (const l of lines) {
     const match = l.match(/^(?:enable )?password (\S+)$/);
     if (match && weakPasswords.includes(match[1])) {
-      issues.push(`Weak password in line: "${l.replace(match[1], "***")}"`);
+      issues.push(`كلمة سر ضعيفة بالسطر: "${l.replace(match[1], "***")}"`);
     }
   }
 
@@ -66,14 +66,14 @@ export function checkConfigSecurity(config: string) {
   const sshOnly = lines.some((l) => l === "transport input ssh");
   if (telnetAllowed || (hasVty && !sshOnly)) {
     issues.push(
-      "Remote access may allow Telnet (clear text). Use: transport input ssh",
+      "الوصول عن بعد قد يسمح بـ Telnet (بدون تشفير). استخدمي: transport input ssh",
     );
   }
 
   const hasPasswords = lines.some((l) => l.includes("password"));
   if (hasPasswords && !lines.includes("service password-encryption")) {
     issues.push(
-      "service password-encryption is not enabled, so line passwords are stored in clear text.",
+      "الأمر service password-encryption غير مفعّل، فكلمات سر الخطوط مخزنة بنص واضح.",
     );
   }
 
@@ -84,12 +84,12 @@ export function checkConfigSecurity(config: string) {
         l.startsWith("snmp-server community private"),
     )
   ) {
-    issues.push("Default SNMP community string (public/private) is used.");
+    issues.push("اسم مجتمع SNMP الافتراضي (public/private) مستخدم.");
   }
 
   if (lines.includes("ip http server")) {
     issues.push(
-      "HTTP server is enabled (unencrypted). Use ip http secure-server or disable it.",
+      "خادم HTTP مفعّل (بدون تشفير). استخدمي ip http secure-server أو عطّليه.",
     );
   }
 
