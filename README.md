@@ -57,10 +57,10 @@
 
 ## Stage 4: Production readiness
 
-- **API protection:** max 5 requests per minute per IP, plus input length validation (`lib/guard.ts`).
-  -per IP, plus ilogs request time and token usage (`lib/metrics.ts`).
-- max 5 requests per the code (`checkConfigSecurity`) detects security issues with fixed rules and writes them in Arabic; the model only explains the config lines. The issues list is identical on every run.
-  -`lib/metricsthe same config returns the same answer without calling the model (in-memory, cleared on server restart).
-- validation known-answer tests for the subnet calculator and the security checker. Run withte per IP, plus
+- API protection: 5 requests per minute per IP, input length validation
+- Metrics: logs request time and token usage
+- Hybrid design: code finds the security issues, the model explains the config
+- Cache: the same config returns the same answer
+- Evals: run npm run eval
 
-# Stage 4: Proafter shortening the prompt and capping output length, a request dropped from about 1436 tokens and 10 s to about 290 tokens and 2 s. Repeated requests return in about 40 ms from the cache.
+Results: about 290 tokens and 2 s per request, down from 1436 tokens and 10 s.
