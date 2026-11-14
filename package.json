@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "eval": "tsx evals/tools.eval.ts"
+    "eval": "tsx evals/tools.eval.ts",
+    "eval:agent": "tsx --env-file=.env.local evals/agent.eval.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",
